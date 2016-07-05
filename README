@@ -1,0 +1,16 @@
+This is a set of scripts for NFV testing.
+Test scenario: vhost-user + multi-queue + MoonGen + testpmd + non-rt kernel + qemu-kvm-rhev
+Environment preparation: two hosts, one for MoonGen, one for guest
+
+1. install two hosts, with non-rt kernel(do not need to install any additional packages)
+2. git clone this repo to host1
+3. run the main script nfv-ovsdpdk-vhostuser.sh on host1(check IP, network card PCI address in the script first)
+	1. setup environment on host1, including packages install, hugepages allocation, tftp and web server
+	2. install a guest on host1
+	3. start testpmd on guest(to decide to use how many multi-queues, is accrding to host1 cpu numbers in total)
+		mq1: 3 vcpus in total(assigned to guest, in xml)
+		mq4: -l(in testpmd) should be 9, 4 for one side packet forwarding, the other 4 for another side, 1 for master thread.
+			9 vcpus assigned to guest(in xml), 4 vcpus bind to ovs-dpdk, 13 vcpus in total.
+		mq8: 17 vcpus assigned to guest(in xml), 8 vcpus bind to ovs-dpdk, 25 vcpus in total
+	4. setup environment on host2, including MoonGen compile and installation
+	5. run l2 latency on host2 with MoonGen
